@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>نظام إدارة جمعية أسرة المداح - قاعدة بيانات متكاملة</title>
+<style>
+  body {
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    background: #f0f4f3;
+    margin: 0; padding: 0;
+    direction: rtl;
+    text-align: right;
+  }
+  header {
+    background-color: #00695c;
+    color: #e0f2f1;
+    padding: 16px 24px;
+    text-align: center;
+    font-size: 28px;
+    font-weight: 700;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  }
+  nav {
+    background-color: #004d40;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 12px 0;
+  }
+  nav button {
+    background-color: #00796b;
+    border: none;
+    margin: 6px 10px;
+    padding: 12px 24px;
+    color: white;
+    font-size: 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    min-width: 140px;
+  }
+  nav button:hover {
+    background-color: #00332b;
+  }
+  .btn-logout {
+    background-color: #c62828 !important;
+    margin-left: 12px !important;
+  }
+  main {
+    max-width: 1200px;
+    margin: 30px auto;
+    background: white;
+    padding: 30px 40px;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.1);
+    min-height: 500px;
+    position: relative;
+  }
+  h2 {
+    color: #004d40;
+    font-weight: 700;
+    margin-bottom: 18px;
+  }
+  form {
+    margin-bottom: 30px;
+  }
+  label {
+    display: block;
+    margin: 14px 0 6px;
+    font-weight: 600;
+    color: #00796b;
+  }
+  input[type="text"],
+  input[type="email"],
+  input[type="tel"],
+  input[type="date"],
+  input[type="password"],
+  select,
+  textarea,
+  input[type="number"],
+  input[type="search"] {
+    width: 100%;
+    padding: 10px 12px;
+    font-size: 15px;
+    border-radius: 6px;
+    border: 1px solid #b2dfdb;
+    box-sizing: border-box;
+    transition: border-color 0.3s ease;
+  }
+  input[type="text"]:focus,
+  input[type="email"]:focus,
+  input[type="tel"]:focus,
+  input[type="date"]:focus,
+  input[type="password"]:focus,
+  select:focus,
+  textarea:focus,
+  input[type="number"]:focus,
+  input[type="search"]:focus {
+    border-color: #004d40;
+    outline: none;
+  }
+  textarea {
+    min-height: 80px;
+    resize: vertical;
+  }
+  .btn {
+    background-color: #00796b;
+    color: white;
+    border: none;
+    padding: 14px 26px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 17px;
+    font-weight: 600;
+    margin-top: 20px;
+    transition: background-color 0.3s ease;
+  }
+  .btn:hover {
+    background-color: #004d40;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 18px;
+  }
+  th, td {
+    border: 1px solid #80cbc4;
+    padding: 12px 10px;
+    font-size: 14px;
+    color: #004d40;
+    vertical-align: middle;
+  }
+  th {
+    background-color: #00796b;
+    color: white;
+  }
+  .hidden {
+    display: none;
+  }
+  .search-input {
+    margin-bottom: 14px;
+    padding: 10px 12px;
+    font-size: 15px;
+    border-radius: 6px;
+    border: 1px solid #b2dfdb;
+    width: 100%;
+    box-sizing: border-box;
+    transition: border-color 0.3s ease;
+  }
+  .search-input:focus {
+    border-color: #004d40;
+    outline: none;
+  }
+  /* Scrollable tables */
+  table tbody {
+    display: block;
+    max-height: 300px;
+    overflow-y: auto;
+  }
+  table thead, table tbody tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+  }
+  /* Permissions form styling */
+  #permissionsForm label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+  }
+  #permissionsForm label span {
+    font-weight: 500;
+  }
+  #permissionsForm input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+  }
+  /* Responsive for mobile */
+  @media (max-width: 700px) {
+    nav button {
+      min-width: 100px;
+      padding: 10px 14px;
+      font-size: 14px;
+      margin: 4px 4px;
+    }
+    main {
+      padding: 20px;
+      margin: 15px;
+    }
+  }
+</style>
+</head>
+<body>
+<header>قاعدة بيانات جمعية أسرة المداح</header>
+
+<!-- شاشة تسجيل الدخول -->
+<section id="loginForm">
+  <h2>تسجيل الدخول</h2>
+  <form onsubmit="return login(event)">
+    <label for="usernameInput">اسم المستخدم</label>
+    <input type="text" id="usernameInput" placeholder="أدخل اسم المستخدم" required autocomplete="username" />
+    <label for="passwordInput">كلمة المرور</label>
+    <input type="password" id="passwordInput" placeholder="أدخل كلمة المرور" required autocomplete="current-password" />
+    <button type="submit" class="btn">دخول</button>
+  </form>
+</section>
+
+<!-- شاشة الترحيب -->
+<section id="welcomeScreen" class="hidden">
+  <h1>مرحباً بك في نظام إدارة جمعية أسرة المداح</h1>
+  <p>النظام الشامل لإدارة بيانات الجمعية الخيرية بكل احترافية وسهولة</p>
+  <button class="btn" onclick="enterSystem()">ادخل للنظام</button>
+  <button class="btn btn-logout" onclick="logout()">تسجيل الخروج</button>
+</section>
+
+<!-- الحاوية الأساسية للنظام -->
+<div id="appContainer" class="hidden">
+  <nav id="mainNav">
+    <!-- أزرار القوائم ستضاف ديناميكياً حسب صلاحيات المستخدم -->
+  </nav>
+  <main>
+    <!-- --- صلاحيات المستخدم: تُعرض فقط للمستخدم د/ طارق منير -->
+    <section id="permissionsSection" class="hidden">
+      <h2>إدارة صلاحيات المستخدم <span id="adminUsernameLabel"></span></h2>
+      <form id="permissionsForm" onsubmit="return savePermissions(event)">
+        <label><span>الوصول لنموذج الموظفين</span><input type="checkbox" id="permEmployees" /></label>
+        <label><span>الوصول لنموذج المتبرعين</span><input type="checkbox" id="permDonors" /></label>
+        <label><span>الوصول لنموذج التبرعات</span><input type="checkbox" id="permDonations" /></label>
+        <label><span>الوصول لنموذج المشاريع</span><input type="checkbox" id="permProjects" /></label>
+        <label><span>الوصول لنموذج الحالات</span><input type="checkbox" id="permCases" /></label>
+        <label><span>رؤية التقارير</span><input type="checkbox" id="permReports" /></label>
+        <label><span>صفحة إدارة المستخدمين</span><input type="checkbox" id="permSettings" /></label>
+        <button type="submit" class="btn">حفظ الصلاحيات</button>
+      </form>
+    </section>
+
+    <!-- نموذج الموظفين -->
+    <section id="employeesForm" class="hidden">
+      <h2>نموذج إدخال بيانات الموظفين</h2>
+      <form onsubmit="return addEmployee(event)">
+        <label for="empName">الاسم الكامل</label>
+        <input type="text" id="empName" required />
+        <label for="empJob">الوظيفة / المنصب</label>
+        <input type="text" id="empJob" required />
+        <label for="empHireDate">تاريخ التعيين</label>
+        <input type="date" id="empHireDate" required />
+        <label for="empPhone">رقم الهاتف</label>
+        <input type="tel" id="empPhone" pattern="[0-9+\-\s]{3,15}" title="أدخل رقم هاتف صالح" required />
+        <label for="empEmail">البريد الإلكتروني</label>
+        <input type="email" id="empEmail" />
+        <button type="submit" class="btn">إضافة موظف</button>
+      </form>
+      <input id="searchEmployees" class="search-input" placeholder="بحث في الموظفين..." oninput="filterEmployees()" />
+      <table id="employeesTable" role="grid" aria-label="الجدول الخاص بالموظفين">
+        <thead><tr><th>رقم الموظف</th><th>الاسم الكامل</th><th>الوظيفة</th><th>تاريخ التعيين</th><th>رقم الهاتف</th><th>البريد الإلكتروني</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </section>
+
+    <!-- نموذج المتبرعين -->
+    <section id="donorsForm" class="hidden">
+      <h2>نموذج إدخال بيانات المتبرعين</h2>
+      <form onsubmit="return addDonor(event)">
+        <label for="donorName">الاسم الكامل</label>
+        <input type="text" id="donorName" required />
+        <label for="donorIDNum">رقم الهوية</label>
+        <input type="text" id="donorIDNum" required />
+        <label for="donorAddress">العنوان</label>
+        <input type="text" id="donorAddress" required />
+        <label for="donorPhone">رقم الهاتف</label>
+        <input type="tel" id="donorPhone" pattern="[0-9+\-\s]{3,15}" title="أدخل رقم هاتف صالح" required />
+        <label for="donorEmail">البريد الإلكتروني</label>
+        <input type="email" id="donorEmail" />
+        <label for="donorType">نوع المتبرع</label>
+        <select id="donorType" required>
+          <option value="">اختر النوع</option>
+          <option value="فرد">فرد</option>
+          <option value="شركة">شركة</option>
+        </select>
+        <button type="submit" class="btn">إضافة متبرع</button>
+      </form>
+      <input id="searchDonors" class="search-input" placeholder="بحث في المتبرعين..." oninput="filterDonors()" />
+      <table id="donorsTable" role="grid" aria-label="الجدول الخاص بالمتبرعين">
+        <thead><tr><th>رقم المتبرع</th><th>الاسم الكامل</th><th>رقم الهوية</th><th>العنوان</th><th>رقم الهاتف</th><th>البريد الإلكتروني</th><th>نوع المتبرع</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </section>
+
+    <!-- نموذج التبرعات -->
+    <section id="donationsForm" class="hidden">
+      <h2>نموذج تسجيل التبرعات</h2>
+      <form onsubmit="return addDonation(event)">
+        <label for="donationDonor">المتبرع</label>
+        <select id="donationDonor" required><option value="">اختر المتبرع</option></select>
+        <label for="donationProject">المشروع (اختياري)</label>
+        <select id="donationProject"><option value="">لا يوجد</option></select>
+        <label for="donationCase">الحالة (اختياري)</label>
+        <select id="donationCase"><option value="">لا يوجد</option></select>
+        <label for="donationAmount">المبلغ</label>
+        <input type="number" min="0" step="0.01" id="donationAmount" required />
+        <label for="donationType">نوع التبرع</label>
+        <select id="donationType" required>
+          <option value="">اختر النوع</option>
+          <option value="نقدي">نقدي</option>
+          <option value="عيني">عيني</option>
+        </select>
+        <label for="donationPurpose">الغرض من التبرع</label>
+        <textarea id="donationPurpose" required></textarea>
+        <label for="donationPaymentMethod">طريقة الدفع</label>
+        <select id="donationPaymentMethod" required>
+          <option value="">اختر الطريقة</option>
+          <option value="نقدي">نقدي</option>
+          <option value="حوالة">حوالة</option>
+          <option value="تحويل بنكي">تحويل بنكي</option>
+          <option value="شيك">شيك</option>
+        </select>
+        <label for="donationDate">التاريخ</label>
+        <input type="date" id="donationDate" required />
+        <button type="submit" class="btn">تسجيل التبرع</button>
+      </form>
+      <input id="searchDonations" class="search-input" placeholder="بحث في التبرعات..." oninput="filterDonations()" />
+      <table id="donationsTable" role="grid" aria-label="الجدول الخاص بالتبرعات">
+        <thead><tr><th>رقم التبرع</th><th>المتبرع</th><th>المشروع</th><th>الحالة</th><th>المبلغ</th><th>نوع التبرع</th><th>الغرض</th><th>طريقة الدفع</th><th>التاريخ</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </section>
+
+    <!-- نموذج المشاريع -->
+    <section id="projectsForm" class="hidden">
+      <h2>نموذج إدارة المشاريع</h2>
+      <form onsubmit="return addProject(event)">
+        <label for="projectName">اسم المشروع</label>
+        <input type="text" id="projectName" required />
+        <label for="projectDescription">وصف المشروع</label>
+        <textarea id="projectDescription" required></textarea>
+        <button type="submit" class="btn">إضافة مشروع</button>
+      </form>
+      <input id="searchProjects" class="search-input" placeholder="بحث في المشاريع..." oninput="filterProjects()" />
+      <table id="projectsTable" role="grid" aria-label="الجدول الخاص بالمشاريع">
+        <thead><tr><th>رقم المشروع</th><th>اسم المشروع</th><th>وصف المشروع</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </section>
+
+    <!-- نموذج الحالات -->
+    <section id="casesForm" class="hidden">
+      <h2>نموذج إدارة الحالات</h2>
+      <form onsubmit="return addCase(event)">
+        <label for="caseName">اسم الحالة</label>
+        <input type="text" id="caseName" required />
+        <label for="casePriority">أولوية الحالة</label>
+        <select id="casePriority" required>
+          <option value="">اختر الأولوية</option>
+          <option value="عالية">عالية</option>
+          <option value="متوسطة">متوسطة</option>
+          <option value="منخفضة">منخفضة</option>
+        </select>
+        <label for="caseCategory">فئة الحالة</label>
+        <input type="text" id="caseCategory" placeholder="مثال: عائلة، فرد، مجتمع" required />
+        <button type="submit" class="btn">إضافة حالة</button>
+      </form>
+      <input id="searchCases" class="search-input" placeholder="بحث في الحالات..." oninput="filterCases()" />
+      <table id="casesTable" role="grid" aria-label="الجدول الخاص بالحالات">
+        <thead><tr><th>رقم الحالة</th><th>اسم الحالة</th><th>الأولوية</th><th>الفئة</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </section>
+
+    <!-- قسم التقارير -->
+    <section id="reportsSection" class="hidden">
+      <h2>التقارير</h2>
+      <div class="report-section">
+        <h3>تقرير إجمالي التبرعات حسب الشهر</h3>
+        <button onclick="reportTotalDonationsByMonth()">إظهار التقرير</button>
+        <table id="reportDonationsByMonthTable" class="hidden"><thead><tr><th>الشهر والسنة</th><th>إجمالي التبرعات</th></tr></thead><tbody></tbody></table>
+      </div>
+      <div class="report-section">
+        <h3>تقرير حسب المتبرع</h3>
+        <label for="reportDonorSelect">اختر متبرع:</label>
+        <select id="reportDonorSelect"><option value="">اختر المتبرع</option></select>
+        <button onclick="reportDonationsByDonor()">إظهار التقرير</button>
+        <table id="reportDonationsByDonorTable" class="hidden"><thead><tr><th>رقم التبرع</th><th>المشروع</th><th>الحالة</th><th>المبلغ</th><th>نوع التبرع</th><th>الغرض</th><th>طريقة الدفع</th><th>التاريخ</th></tr></thead><tbody></tbody></table>
+      </div>
+      <div class="report-section">
+        <h3>تقرير المشاريع والتبرعات المخصصة لها</h3>
+        <button onclick="reportProjectsWithDonations()">إظهار التقرير</button>
+        <table id="reportProjectsDonationsTable" class="hidden"><thead><tr><th>اسم المشروع</th><th>عدد التبرعات</th><th>إجمالي المبالغ</th></tr></thead><tbody></tbody></table>
+      </div>
+      <div class="report-section">
+        <h3>تقرير تصفية حسب نوع التبرع وطريقة الدفع</h3>
+        <label>نوع التبرع:
+          <select id="filterDonationType"><option value="">الكل</option><option value="نقدي">نقدي</option><option value="عيني">عيني</option></select>
+        </label>
+        <label>طريقة الدفع:
+          <select id="filterPaymentMethod"><option value="">الكل</option><option value="نقدي">نقدي</option><option value="حوالة">حوالة</option><option value="تحويل بنكي">تحويل بنكي</option><option value="شيك">شيك</option></select>
+        </label>
+        <button onclick="reportFilteredDonations()">تصفية وإظهار التقرير</button>
+        <table id="reportFilteredDonationsTable" class="hidden"><thead><tr><th>رقم التبرع</th><th>المتبرع</th><th>المشروع</th><th>الحالة</th><th>المبلغ</th><th>نوع التبرع</th><th>طريقة الدفع</th><th>التاريخ</th></tr></thead><tbody></tbody></table>
+      </div>
+      <div class="report-section">
+        <h3>تقرير إجمالي المبالغ المستلمة خلال فترة زمنية معينة</h3>
+        <label for="startDate">من تاريخ:</label><input type="date" id="startDate" />
+        <label for="endDate">إلى تاريخ:</label><input type="date" id="endDate" />
+        <button onclick="reportTotalAmountInPeriod()">إظهار التقرير</button>
+        <p id="totalAmountPeriod" style="font-weight:bold; margin-top:10px;"></p>
+      </div>
+    </section>
+
+    <!-- إعدادات إدارة المستخدمين -->
+    <section id="settingsSection" class="hidden">
+      <h2>إدارة المستخدمين</h2>
+      <form id="addUserForm" onsubmit="return addUser(event)">
+        <h3>إضافة مستخدم جديد</h3>
+        <label for="newUsername">اسم المستخدم</label>
+        <input type="text" id="newUsername" required />
+        <label for="newUserPassword">كلمة المرور</label>
+        <input type="password" id="newUserPassword" required />
+        <label for="newUserRole">نوع المستخدم</label>
+        <select id="newUserRole" required>
+          <option value="user" selected>مستخدم</option>
+          <option value="admin">مدير</option>
+        </select>
+        <button type="submit" class="btn">إضافة المستخدم</button>
+      </form>
+      <h3>المستخدمون الحاليون</h3>
+      <table id="usersTable" role="grid" aria-label="الجدول الخاص بالمستخدمين">
+        <thead><tr><th>اسم المستخدم</th><th>نوع المستخدم</th><th>إجراءات</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </section>
+  </main>
+</div>
+
+<script>
+  // بيانات المستخدمين مع صلاحيات مبدئية
+  let users = [
+    {username: "د/ طارق منير", password: "159019", role: "admin"}, // المدير الرئيسي
+    // مستخدمون إضافيون صلح لهم عرض الأقسام بناء على نوع المستخدم
+  ];
+  let currentUser = null;
+
+  // صلاحيات حسب نوع المستخدم
+  const rolePermissions = {
+    'admin': {
+      employees: true, donors: true, donations: true, projects: true,
+      cases: true, reports: true, settings: true
+    },
+    'user': {
+      employees: true, donors: true, donations: true, projects: true,
+      cases: true, reports: true, settings: false
+    }
+  };
+
+  // أقسام المشروع
+  const sections = {
+    employeesForm:'الموظفين',
+    donorsForm:'المتبرعون',
+    donationsForm:'التبرعات',
+    projectsForm:'المشاريع',
+    casesForm:'الحالات',
+    reportsSection:'التقارير',
+    settingsSection:'الإعدادات'
+  };
+
+  // تسجيل الدخول
+  function login(e){
+    e.preventDefault();
+    const username = document.getElementById('usernameInput').value.trim();
+    const password = document.getElementById('passwordInput').value;
+    const user = users.find(u=>u.username === username && u.password === password);
+    if(!user){
+      alert('اسم المستخدم أو كلمة المرور غير صحيحين');
+      return false;
+    }
+    currentUser = user;
+    document.getElementById('loginForm').classList.add('hidden');
+    document.getElementById('welcomeScreen').classList.remove('hidden');
+    return false;
+  }
+  function enterSystem(){
+    document.getElementById('welcomeScreen').classList.add('hidden');
+    document.getElementById('appContainer').classList.remove('hidden');
+    renderNav();
+    renderSections();
+    showFirstSection();
+    updateUsersTable();
+  }
+  function logout(){
+    if(confirm('هل تريد تسجيل الخروج؟')){
+      currentUser = null;
+      document.getElementById('loginForm').classList.remove('hidden');
+      document.getElementById('welcomeScreen').classList.add('hidden');
+      document.getElementById('appContainer').classList.add('hidden');
+      clearAllInputs();
+    }
+  }
+  function clearAllInputs(){
+    document.querySelectorAll('form').forEach(f=>f.reset());
+    document.querySelectorAll('input[type="search"]').forEach(inp=>inp.value='');
+  }
+
+  // عرض قسم واحد فقط
+  function showSection(id){
+    Object.keys(sections).forEach(sec=>{
+      const el=document.getElementById(sec);
+      if(el)el.classList.add('hidden');
+    });
+    const toShow=document.getElementById(id);
+    if(toShow)toShow.classList.remove('hidden');
+  }
+
+  // بناء قائمة التنقل حسب صلاحيات المستخدم الحالي
+  function renderNav(){
+    const nav=document.getElementById('mainNav');
+    nav.innerHTML='';
+    let perms = rolePermissions[currentUser.role] || {};
+    Object.entries(perms).forEach(([key,val])=>{
+      if(val){
+        let secId = key==='settings'?'settingsSection':key+'Form';
+        if(sections[secId]){
+          let btn=document.createElement('button');
+          btn.textContent=sections[secId];
+          btn.onclick=()=>showSection(secId);
+          nav.appendChild(btn);
+        }
+      }
+    });
+    // زر خروج
+    let logoutBtn=document.createElement('button');
+    logoutBtn.classList.add('btn-logout');
+    logoutBtn.textContent='تسجيل الخروج';
+    logoutBtn.onclick=logout;
+    nav.appendChild(logoutBtn);
+  }
+
+  // إظهار الأقسام حسب الصلاحيات
+  function renderSections(){
+    let perms = rolePermissions[currentUser.role] || {};
+    Object.keys(sections).forEach(sec=>{
+      const el=document.getElementById(sec);
+      if(!el)return;
+      let key = sec.replace('Section','').replace('Form','');
+      if(perms[key])el.classList.remove('hidden');
+      else el.classList.add('hidden');
+    });
+  }
+
+  // عرض أول قسم مفعّل تلقائيا
+  function showFirstSection(){
+    let perms = rolePermissions[currentUser.role];
+    for(let key in perms){
+      if(perms[key]){
+        let secId = key==='settings'?'settingsSection':key+'Form';
+        if(document.getElementById(secId)){
+          showSection(secId);
+          break;
+        }
+      }
+    }
+  }
+
+  // إدارة المستخدمين (من قسم الإعدادات)
+  function updateUsersTable(){
+    const tbody=document.querySelector('#usersTable tbody');
+    tbody.innerHTML='';
+    users.forEach((u,i)=>{
+      let tr=document.createElement('tr');
+      tr.innerHTML=`
+        <td>${u.username}</td>
+        <td>${u.role === 'admin' ? 'مدير' : 'مستخدم'}</td>
+        <td>${u.username==="د/ طارق منير" ? '<em>غير قابل للحذف</em>' : '<button onclick="deleteUser('+i+')" style="background:#c62828;color:#fff;border:none;padding:6px 10px;border-radius:5px;cursor:pointer;">حذف</button>'}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+  function deleteUser(index){
+    if(currentUser.role!=='admin') return alert('غير مصرح لك بحذف مستخدم');
+    if(users[index].username==="د/ طارق منير"){
+      alert('لا يمكن حذف المدير الرئيسي');
+      return;
+    }
+    if(confirm(`هل أنت متأكد من حذف المستخدم ${users[index].username}؟`)){
+      users.splice(index,1);
+      updateUsersTable();
+    }
+  }
+
+  function addUser(e){
+    e.preventDefault();
+    if(currentUser.role !=='admin'){
+      alert("ليس لديك صلاحية إضافة مستخدم");
+      return false;
+    }
+    const username=document.getElementById('newUsername').value.trim();
+    const password=document.getElementById('newUserPassword').value;
+    const role=document.getElementById('newUserRole').value;
+    if(!username || !password){
+      alert('يرجى ملء جميع الحقول');
+      return false;
+    }
+    if(users.some(u=>u.username===username)){
+      alert('اسم المستخدم موجود بالفعل');
+      return false;
+    }
+    users.push({username,password,role});
+    updateUsersTable();
+    e.target.reset();
+    alert('تمت إضافة المستخدم بنجاح');
+    return false;
+  }
+
+  // بيانات وأكواد باقي النظام (الموظفين، المتبرعين، التبرعات، المشاريع، الحالات، والتقارير)
+  // نفس الكود من النسخ السابقة - تحتفظ بالصلاحيات عبر currentUser.role
+  // على سبيل المثال:
+
+  // بيانات النظام (تخزين داخلي مؤقت)
+  let employees = [];
+  let donors = [];
+  let projects = [];
+  let cases = [];
+  let donations = [];
+  let empCounter=1, donorCounter=1, projectCounter=1, caseCounter=1, donationCounter=1;
+
+  // وظائف الموظفين
+  function addEmployee(e){
+    e.preventDefault();
+    if(currentUser.role !== 'admin' && currentUser.role !== 'user') return alert('غير مصرح');
+    employees.push({
+      id: empCounter++,
+      name: document.getElementById("empName").value.trim(),
+      job: document.getElementById("empJob").value.trim(),
+      hireDate: document.getElementById("empHireDate").value,
+      phone: document.getElementById("empPhone").value.trim(),
+      email: document.getElementById("empEmail").value.trim()
+    });
+    updateEmployeesTable();
+    e.target.reset();
+    alert("تم إضافة الموظف");
+    return false;
+  }
+  function updateEmployeesTable(){
+    let tbody=document.querySelector("#employeesTable tbody");
+    tbody.innerHTML="";
+    employees.forEach(emp=>{
+      let tr=document.createElement("tr");
+      tr.innerHTML=`<td>${emp.id}</td><td>${emp.name}</td><td>${emp.job}</td><td>${emp.hireDate}</td><td>${emp.phone}</td><td>${emp.email}</td>`;
+      tbody.appendChild(tr);
+    });
+  }
+  function filterEmployees(){
+    let term=document.getElementById("searchEmployees").value.trim().toLowerCase();
+    let tbody=document.querySelector("#employeesTable tbody");
+    tbody.innerHTML="";
+    employees.filter(emp=>{
+      return emp.name.toLowerCase().includes(term) || emp.job.toLowerCase().includes(term) || emp.phone.toLowerCase().includes(term) || emp.email.toLowerCase().includes(term) || emp.hireDate.includes(term) || emp.id.toString()===term;
+    }).forEach(emp=>{
+      let tr=document.createElement("tr");
+      tr.innerHTML=`<td>${emp.id}</td><td>${emp.name}</td><td>${emp.job}</td><td>${emp.hireDate}</td><td>${emp.phone}</td><td>${emp.email}</td>`;
+      tbody.appendChild(tr);
+    });
+  }
+
+  // المتبرعين
+  function addDonor(e){
+    e.preventDefault();
+    donors.push({
+      id: donorCounter++,
+      name: document.getElementById("donorName").value.trim(),
+      idNum: document.getElementById("donorIDNum").value.trim(),
+      address: document.getElementById("donorAddress").value.trim(),
+      phone: document.getElementById("donorPhone").value.trim(),
+      email: document.getElementById("donorEmail").value.trim(),
+      type: document.getElementById("donorType").value
+    });
+    updateDonorsTable();
+    updateDonorSelects();
+    e.target.reset();
+    alert("تم إضافة المتبرع");
+    return false;
+  }
+  function updateDonorsTable(){
+    let tbody=document.querySelector("#donorsTable tbody");
+    tbody.innerHTML="";
+    donors.forEach(donor=>{
+      let tr=document.createElement("tr");
+      tr.innerHTML=`<td>${donor.id}</td><td>${donor.name}</td><td>${donor.idNum}</td><td>${donor.address}</td><td>${donor.phone}</td><td>${donor.email}</td><td>${donor.type}</td>`;
+      tbody.appendChild(tr);
+    });
+  }
+  function filterDonors(){
+    let term=document.getElementById("searchDonors").value.trim().toLowerCase();
+    let tbody=document.querySelector("#donorsTable tbody");
+    tbody.innerHTML="";
+    donors.filter(d=>{
+      return d.name.toLowerCase().includes(term) || d.idNum.toLowerCase().includes(term) || d.address.toLowerCase().includes(term) || d.phone.toLowerCase().includes(term) || d.email.toLowerCase().includes(term) || d.type.toLowerCase().includes(term) || d.id.toString()===term;
+    }).forEach(donor=>{
+      let tr=document.createElement("tr");
+      tr.innerHTML=`<td>${donor.id}</td><td>${donor.name}</td><td>${donor.idNum}</td><td>${donor.address}</td><td>${donor.phone}</td><td>${donor.email}</td><td>${donor.type}</td>`;
+      tbody.appendChild(tr);
+    });
+  }
+  function updateDonorSelects(){
+    let sel=document.getElementById("donationDonor");
+    sel.innerHTML='<option value="">اختر المتبرع</option>';
+    donors.forEach(d=>{
+      let opt=document.createElement("option");
+      opt.value=d.id;
+      opt.textContent=d.name+" ("+d.type+")";
+      sel.appendChild(opt);
+    });
+    let repSel=document.getElementById("reportDonorSelect");
+    if(repSel){
+      repSel.innerHTML='<option value="">اختر المتبرع</option>';
+      donors.forEach(d=>{
+        let opt=document.createElement("option");
+        opt.value=d.id;
+        opt.textContent=d.name+" ("+d.type+")";
+        repSel.appendChild(opt);
+      });
+    }
+  }
+
+  // المشاريع
+  function addProject(e){
+    e.preventDefault();
+    projects.push({
+      id: projectCounter++,
+      name: document.getElementById("projectName").value.trim(),
+      description: document.getElementById("projectDescription").value.trim()
+    });
+    updateProjectsTable();
+    updateProjectSelects();
+    e.target.reset();
+    alert("تم إضافة المشروع");
+    return false;
+  }
+  function updateProjectsTable(){
+    let tbody=document.querySelector("#projectsTable tbody");
+    tbody.innerHTML="";
+    projects.forEach(proj=>{
+      let tr=document.createElement("tr");
+      tr.innerHTML=`<td>${proj.id}</td><td>${proj.name}</td><td>${proj.description}</td>`;
+      tbody.appendChild(tr);
+    });
+  }
+  function filterProjects(){
+    let term=document.getElementById("searchProjects").value.trim().toLowerCase();
+    let tbody=document.querySelector("#projectsTable tbody");
+    tbody.innerHTML="";
+    projects.filter(p=>{
+      return p.name.toLowerCase().includes(term)||p.description.toLowerCase().includes(term)||p.id.toString()===term;
+    }).forEach(proj=>{
+      let tr=document.createElement("tr");
+      tr.innerHTML=`<td>${proj.id}</td><td>${proj.name}</td><td>${proj.description}</td>`;
+      tbody.appendChild(tr);
+    });
+  }
+  function updateProjectSelects(){
+    let sel=document.getElementById("donationProject");
+    if(sel){
+      sel.innerHTML='<option value="">لا يوجد</option>';
+      projects.forEach(p=>{
+        let opt=document.createElement("option");
+        opt.value=p.id;
+        opt.textContent=p.name;
+        sel.appendChild(opt);
+      });
+    }
+  }
+
+  // الحالات
+  function addCase(e){
+    e.preventDefault();
+    cases.push({
+      id: caseCounter++,
+      name: document.getElementById("caseName").value.trim(),
+      priority: document.getElementById("casePriority").value,
+      category: document.getElementById("caseCategory").value.trim()
+    });
+    updateCasesTable();
+    updateCaseSelects();
+    e.target.reset();
+    alert("تم إضافة الحالة");
+    return false;
+  }
+  function updateCasesTable(){
+    let tbody=document.querySelector("#casesTable tbody");
+    tbody.innerHTML="";
+    cases.forEach(c=>{
+      let tr=document.createElement("tr");
+      tr.innerHTML=`<td>${c.id}</td><td>${c.name}</td><td>${c.priority}</td><td>${c.category}</td>`;
+      tbody.appendChild(tr);
+    });
+  }
+  function filterCases(){
+    let term=document.getElementById("searchCases").value.trim().toLowerCase();
+    let tbody=document.querySelector("#casesTable tbody");
+    tbody.innerHTML="";
+    cases.filter(c=>{
+      return c.name.toLowerCase().includes(term) || c.priority.toLowerCase().includes(term) || c.category.toLowerCase().includes(term) || c.id.toString()===term;
+    }).forEach(c=>{
+      let tr=document.createElement("tr");
+      tr.innerHTML=`<td>${c.id}</td><td>${c.name}</td><td>${c.priority}</td><td>${c.category}</td>`;
+      tbody.appendChild(tr);
+    });
+  }
+  function updateCaseSelects(){
+    let sel=document.getElementById("donationCase");
+    if(sel){
+      sel.innerHTML='<option value="">لا يوجد</option>';
+      cases.forEach(c=>{
+        let opt=document.createElement("option");
+        opt.value=c.id;
+        opt.textContent=c.name + " (" + c.priority + " - " + c.category + ")";
+        sel.appendChild(opt);
+      });
+    }
+  }
+
+  // التبرعات
+  function addDonation(e){
+    e.preventDefault();
+    donations.push({
+      id: donationCounter++,
+      donorId: parseInt(document.getElementById("donationDonor").value),
+      projectId: document.getElementById("donationProject").value ? parseInt(document.getElementById("donationProject").value) : null,
+      caseId: document.getElementById("donationCase").value ? parseInt(document.getElementById("donationCase").value) : null,
+      amount: parseFloat(document.getElementById("donationAmount").value),
+      type: document.getElementById("donationType").value,
+      purpose: document.getElementById("donationPurpose").value.trim(),
+      paymentMethod: document.getElementById("donationPaymentMethod").value,
+      date: document.getElementById("donationDate").value
+    });
+    updateDonationsTable();
+    e.target.reset();
+    alert("تم تسجيل التبرع");
+    return false;
+  }
+  // دوال مساعدة لاسم المتبرع والمشروع والحالة
+  function getDonorNameById(id){
+    const donor = donors.find(d=>d.id===id);
+    return donor ? donor.name : "غير معروف";
+  }
+  function getProjectNameById(id){
+    if(id === null || id === undefined) return "بدون مشروع";
+    const proj = projects.find(p=>p.id===id);
+    return proj ? proj.name : "غير معروف";
+  }
+  function getCaseNameById(id){
+    if(id === null || id === undefined) return "بدون حالة";
+    const c = cases.find(ca=>ca.id===id);
+    return c ? c.name : "غير معروف";
+  }
+  function updateDonationsTable(){
+    const tbody = document.querySelector("#donationsTable tbody");
+    tbody.innerHTML = "";
+    donations.forEach(d=>{
+      let tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${d.id}</td>
+        <td>${getDonorNameById(d.donorId)}</td>
+        <td>${getProjectNameById(d.projectId)}</td>
+        <td>${getCaseNameById(d.caseId)}</td>
+        <td>${d.amount.toFixed(2)}</td>
+        <td>${d.type}</td>
+        <td>${d.purpose}</td>
+        <td>${d.paymentMethod}</td>
+        <td>${d.date}</td>`;
+      tbody.appendChild(tr);
+    });
+  }
+  function filterDonations(){
+    const term = document.getElementById("searchDonations").value.trim().toLowerCase();
+    const tbody = document.querySelector("#donationsTable tbody");
+    tbody.innerHTML = "";
+    donations.filter(d=>{
+      let donorName = getDonorNameById(d.donorId).toLowerCase();
+      let projectName = getProjectNameById(d.projectId).toLowerCase();
+      let caseName = getCaseNameById(d.caseId).toLowerCase();
+      return d.id.toString() === term ||
+        donorName.includes(term) ||
+        projectName.includes(term) ||
+        caseName.includes(term) ||
+        d.amount.toString().includes(term) ||
+        d.type.toLowerCase().includes(term) ||
+        d.purpose.toLowerCase().includes(term) ||
+        d.paymentMethod.toLowerCase().includes(term) ||
+        d.date.includes(term);
+    }).forEach(d=>{
+      let tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${d.id}</td>
+        <td>${getDonorNameById(d.donorId)}</td>
+        <td>${getProjectNameById(d.projectId)}</td>
+        <td>${getCaseNameById(d.caseId)}</td>
+        <td>${d.amount.toFixed(2)}</td>
+        <td>${d.type}</td>
+        <td>${d.purpose}</td>
+        <td>${d.paymentMethod}</td>
+        <td>${d.date}</td>`;
+      tbody.appendChild(tr);
+    });
+  }
+
+  // تقارير (مبنية على البيانات - مثال)
+  function reportTotalDonationsByMonth(){
+    let aggregated = {};
+    donations.forEach(d=>{
+      let dt = new Date(d.date);
+      if(isNaN(dt)) return;
+      let key = (dt.getMonth()+1) + "/" + dt.getFullYear();
+      if(!aggregated[key]) aggregated[key] = 0;
+      aggregated[key] += d.amount;
+    });
+    let tbody = document.querySelector("#reportDonationsByMonthTable tbody");
+    tbody.innerHTML = "";
+    Object.entries(aggregated).forEach(([k,v])=>{
+      let tr = document.createElement("tr");
+      tr.innerHTML = `<td>${k}</td><td>${v.toFixed(2)}</td>`;
+      tbody.appendChild(tr);
+    });
+    document.getElementById("reportDonationsByMonthTable").classList.remove("hidden");
+  }
+  function reportDonationsByDonor(){
+    const donorId = parseInt(document.getElementById("reportDonorSelect").value);
+    if(!donorId) return alert("يرجى اختيار متبرع");
+    const filtered = donations.filter(d => d.donorId === donorId);
+    let tbody = document.querySelector("#reportDonationsByDonorTable tbody");
+    tbody.innerHTML = "";
+    filtered.forEach(d=>{
+      let tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${d.id}</td>
+        <td>${getProjectNameById(d.projectId)}</td>
+        <td>${getCaseNameById(d.caseId)}</td>
+        <td>${d.amount.toFixed(2)}</td>
+        <td>${d.type}</td>
+        <td>${d.purpose}</td>
+        <td>${d.paymentMethod}</td>
+        <td>${d.date}</td>`;
+      tbody.appendChild(tr);
+    });
+    document.getElementById("reportDonationsByDonorTable").classList.remove("hidden");
+  }
+  function reportProjectsWithDonations(){
+    let tbody = document.querySelector("#reportProjectsDonationsTable tbody");
+    tbody.innerHTML = "";
+    projects.forEach(p=>{
+      let ds = donations.filter(d=>d.projectId === p.id);
+      let total = ds.reduce((a,b)=>a+b.amount,0);
+      let tr=document.createElement("tr");
+      tr.innerHTML=`<td>${p.name}</td><td>${ds.length}</td><td>${total.toFixed(2)}</td>`;
+      tbody.appendChild(tr);
+    });
+    document.getElementById("reportProjectsDonationsTable").classList.remove("hidden");
+  }
+  function reportFilteredDonations(){
+    let type = document.getElementById("filterDonationType").value;
+    let pay = document.getElementById("filterPaymentMethod").value;
+    let filtered = donations;
+    if(type) filtered = filtered.filter(d=>d.type===type);
+    if(pay) filtered = filtered.filter(d=>d.paymentMethod===pay);
+    let tbody = document.querySelector("#reportFilteredDonationsTable tbody");
+    tbody.innerHTML = "";
+    filtered.forEach(d=>{
+      let tr=document.createElement("tr");
+      tr.innerHTML = `
+        <td>${d.id}</td>
+        <td>${getDonorNameById(d.donorId)}</td>
+        <td>${getProjectNameById(d.projectId)}</td>
+        <td>${getCaseNameById(d.caseId)}</td>
+        <td>${d.amount.toFixed(2)}</td>
+        <td>${d.type}</td>
+        <td>${d.paymentMethod}</td>
+        <td>${d.date}</td>`;
+      tbody.appendChild(tr);
+    });
+    document.getElementById("reportFilteredDonationsTable").classList.remove("hidden");
+  }
+  function reportTotalAmountInPeriod(){
+    let start=document.getElementById("startDate").value;
+    let end=document.getElementById("endDate").value;
+    if(!start || !end) return alert("يرجى إدخال التواريخ");
+    let sDate=new Date(start), eDate=new Date(end);
+    if(sDate > eDate) return alert("تاريخ البداية يجب أن لا يتجاوز تاريخ النهاية");
+    let total=0;
+    donations.forEach(d=>{
+      let dDate = new Date(d.date);
+      if(dDate>=sDate && dDate<=eDate) total+=d.amount;
+    });
+    document.getElementById("totalAmountPeriod").textContent=`إجمالي التبرعات من ${start} إلى ${end}: ${total.toFixed(2)}`;
+  }
+
+  // عند تحميل الصفحة تشغيل شاشة تسجيل الدخول فقط
+  window.onload = function(){
+    document.getElementById('loginForm').classList.remove('hidden');
+    document.getElementById('welcomeScreen').classList.add('hidden');
+    document.getElementById('appContainer').classList.add('hidden');
+  };
+</script>
+</body>
+</html>
+
